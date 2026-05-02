@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ethiopian Foods - Meat vs Vegetable Entrées Calorie Counter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --body-bg: #0d0d0d;
+  --card-bg: #1a1a1a;
+  --text-main: #f5f5f5;
+  --text-sub: #bbbbbb;
+  --border-light: #2a2a2a;
+  --ethiopian-red: #b83227;
+  --ethiopian-green: #1e8449;
+  --ethiopian-gold: #d4a017;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--body-bg);
+  color: var(--text-main);
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+body[data-theme="light"] {
+  --body-bg: #f9fafb;
+  --card-bg: #ffffff;
+  --text-main: #111827;
+  --text-sub: #4b5563;
+  --border-light: #e5e7eb;
+  --ethiopian-red: #dc2626;
+  --ethiopian-green: #16a34a;
+  --ethiopian-gold: #d4a017;
+}
+
+body[data-theme="ethiopian"] {
+  --body-bg: #faf3e0;
+  --card-bg: #fffaf0;
+  --text-main: #3f2a14;
+  --text-sub: #7c5a2b;
+  --border-light: #f2d9a6;
+  --ethiopian-red: #c0392b;
+  --ethiopian-green: #0f6b3d;
+  --ethiopian-gold: #d4a017;
+}
+
+body[data-theme="dark"] {
+  --body-bg: #0f172a;
+  --card-bg: #020617;
+  --text-main: #e5e7eb;
+  --text-sub: #9ca3af;
+  --border-light: #1f2937;
+  --ethiopian-red: #f87171;
+  --ethiopian-green: #2dd4bf;
+  --ethiopian-gold: #fbbf24;
+}
+
+.app {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 1200px;
+  width: 95%;
+  margin: 0 auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  position: relative;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.theme-toggle button {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.theme-toggle button:hover {
+  background: var(--ethiopian-gold);
+  color: #0d0d0d;
+}
+
+.theme-toggle button.active {
+  background: var(--ethiopian-gold);
+  color: #0d0d0d;
+  border-color: var(--ethiopian-gold);
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+h2 {
+  color: var(--text-main);
+  font-weight: 800;
+  margin-bottom: 12px;
+  border-left: 6px solid var(--ethiopian-gold);
+  padding-left: 12px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-bottom: 20px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.column {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-light);
+}
+
+.column-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.column-title span {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-sub);
+}
+
+.fast-title {
+  color: var(--ethiopian-red);
+}
+
+.healthy-title {
+  color: var(--ethiopian-green);
+}
+
+.preset-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.preset-btn {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: var(--card-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-btn:hover {
+  background: var(--ethiopian-gold);
+  color: #0d0d0d;
+}
+
+.item {
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  background: var(--card-bg);
+}
+
+.item.fast {
+  border-color: var(--ethiopian-red);
+  opacity: 0.9;
+}
+
+.item.healthy {
+  border-color: var(--ethiopian-green);
+  opacity: 0.9;
+}
+
+.item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 1;
+}
+
+.item.selected.fast {
+  background: rgba(184, 50, 39, 0.2);
+  border-color: var(--ethiopian-gold);
+  border-width: 3px;
+}
+
+.item.selected.healthy {
+  background: rgba(30, 132, 73, 0.2);
+  border-color: var(--ethiopian-gold);
+  border-width: 3px;
+}
+
+.item-img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid var(--ethiopian-gold);
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.item-name span {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+
+.kcal {
+  font-weight: 600;
+  color: var(--ethiopian-gold);
+  font-size: 0.9rem;
+}
+
+.search-bar {
+  margin-bottom: 20px;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  font-size: 0.9rem;
+  background: var(--card-bg);
+  color: var(--text-main);
+}
+
+.form {
+  margin-top: 16px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 16px;
+}
+
+.form-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-main);
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.form-row input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--card-bg);
+  color: var(--text-main);
+  font-size: 0.85rem;
+}
+
+.form-row input[type="number"] {
+  max-width: 120px;
+}
+
+.form-row button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--ethiopian-gold);
+  color: #0d0d0d;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-row button:hover {
+  filter: brightness(0.9);
+}
+
+.error-text {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 4px;
+  min-height: 20px;
+}
+
+.hint-text {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  margin-top: 8px;
+}
+
+.summary {
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.summary-label {
+  color: var(--text-sub);
+  font-weight: 500;
+}
+
+.summary-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.summary-value.fast {
+  color: var(--ethiopian-red);
+}
+
+.summary-value.healthy {
+  color: var(--ethiopian-green);
+}
+
+.macro-row {
+  font-size: 0.85rem;
+  padding-left: 16px;
+}
+
+.macro-animate {
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.macro-animate.bump {
+  transform: scale(1.2);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+}
+
+.pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ethiopian-gold);
+}
+
+.preview-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+.preview-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--ethiopian-gold);
+}
+
+.preview-body {
+  display: flex;
+  gap: 12px;
+}
+
+.preview-image-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--border-light);
+  flex-shrink: 0;
+}
+
+.preview-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-text {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.preview-name {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.preview-kcal, .preview-macros, .preview-notes {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.compare-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.compare-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--ethiopian-gold);
+}
+
+.compare-body {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.compare-slot {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+
+.compare-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.slot-title {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.compare-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.compare-kcal, .compare-macros {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+
+.compare-diff {
+  text-align: center;
+  padding: 8px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--ethiopian-gold);
+}
+
+.summary-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.reset-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--card-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.reset-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.avatar-hint {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  text-align: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+
+#instagramLayout {
+  display: none;
+  width: 1080px;
+  height: 1350px;
+  background: var(--card-bg);
+  padding: 60px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  border: 20px solid var(--ethiopian-gold);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: var(--body-bg);
+}
+
+#instagramLayout img {
+  width: 600px;
+  height: 600px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 30px;
+}
+
+#instagramLayout h1 {
+  font-size: 48px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+#igMacros {
+  font-size: 32px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  
+  .theme-toggle {
+    position: static;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  
+  .columns {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary {
+    position: static;
+  }
+  
+  body {
+    padding: 12px;
+  }
+}
+</style>
+</head>
+<body data-theme="dark">
+<div class="app">
+  <div class="theme-toggle">
+    <button data-theme-btn="light">🌞 Light</button>
+    <button data-theme-btn="ethiopian">🇪🇹 Ethiopian</button>
+    <button data-theme-btn="dark" class="active">🌙 Dark</button>
+  </div>
+
+  <div>
+    <h1>🇪🇹 Ethiopian Foods<br>Meat vs Vegetable Entrées</h1>
+    <div class="subtitle">
+      Compare calories and macros between meat and vegetable Ethiopian dishes. Tap any dish to select/unselect.
+    </div>
+
+    <div class="search-bar">
+      <input id="searchInput" type="text" placeholder="🔍 Search dishes...">
+    </div>
+
+    <div class="columns">
+      <!-- Meat Column -->
+      <div class="column">
+        <div class="column-title">
+          🥩 <span class="fast-title">Meat Entrées</span>
+          <span>Build your meat plate</span>
+        </div>
+
+        <div class="preset-row">
+          <button type="button" class="preset-btn" id="fastComboBtn">🍖 Select All Meat</button>
+          <button type="button" class="preset-btn" id="autoPlateBtn">🎲 Random Plate (2+2)</button>
+        </div>
+
+        <div id="meat-items-container">
+          <!-- Meat items will be populated by JavaScript -->
+        </div>
+
+        <div class="form">
+          <div class="form-title">➕ Add your own meat entrée</div>
+          <div class="form-row">
+            <input id="fastName" type="text" placeholder="Dish name">
+            <input id="fastKcal" type="number" step="1" placeholder="Calories">
+            <input id="fastProtein" type="number" step="1" placeholder="Protein (g)">
+            <input id="fastCarbs" type="number" step="1" placeholder="Carbs (g)">
+            <input id="fastFat" type="number" step="1" placeholder="Fat (g)">
+            <button id="addFast">➕ Add</button>
+          </div>
+          <div id="fastError" class="error-text"></div>
+          <div class="hint-text">💡 Add complete macro info for accurate tracking</div>
+        </div>
+      </div>
+
+      <!-- Vegetable Column -->
+      <div class="column">
+        <div class="column-title">
+          🌱 <span class="healthy-title">Vegetable Entrées</span>
+          <span>Build your vegetable plate</span>
+        </div>
+
+        <div class="preset-row">
+          <button type="button" class="preset-btn" id="healthyComboBtn">🥬 Select All Veg</button>
+        </div>
+
+        <div id="veg-items-container">
+          <!-- Vegetable items will be populated by JavaScript -->
+        </div>
+
+        <div class="form">
+          <div class="form-title">➕ Add your own vegetable entrée</div>
+          <div class="form-row">
+            <input id="healthyName" type="text" placeholder="Dish name">
+            <input id="healthyKcal" type="number" step="1" placeholder="Calories">
+            <input id="healthyProtein" type="number" step="1" placeholder="Protein (g)">
+            <input id="healthyCarbs" type="number" step="1" placeholder="Carbs (g)">
+            <input id="healthyFat" type="number" step="1" placeholder="Fat (g)">
+            <button id="addHealthy">➕ Add</button>
+          </div>
+          <div id="healthyError" class="error-text"></div>
+          <div class="hint-text">💡 Traditional veg dishes are typically 150-400 kcal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Panel -->
+  <div class="summary">
+    <div class="summary-row">
+      <div class="pill">
+        <span class="pill-dot"></span>
+        📊 Calorie & Macro Summary
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <div class="preview-title">🍽️ Dish Preview</div>
+      <div class="preview-body">
+        <div class="preview-image-wrap">
+          <img id="previewImage" src="" alt="Selected dish">
+        </div>
+        <div class="preview-text">
+          <div id="previewName" class="preview-name">Tap any dish to preview</div>
+          <div id="previewKcal" class="preview-kcal"></div>
+          <div id="previewMacros" class="preview-macros"></div>
+          <div id="previewNotes" class="preview-notes"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-label">🥩 Meat Plate Total</div>
+      <div id="fastTotal" class="summary-value fast">0 kcal</div>
+    </div>
+    <div class="summary-row macro-row">
+      <div class="summary-label"></div>
+      <div class="summary-value fast">
+        💪 <span id="fastProtein">0g</span> • 
+        🍚 <span id="fastCarbs">0g</span> • 
+        🧈 <span id="fastFat">0g</span>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-label">🌱 Vegetable Plate Total</div>
+      <div id="healthyTotal" class="summary-value healthy">0 kcal</div>
+    </div>
+    <div class="summary-row macro-row">
+      <div class="summary-label"></div>
+      <div class="summary-value healthy">
+        💪 <span id="healthyProtein">0g</span> • 
+        🍚 <span id="healthyCarbs">0g</span> • 
+        🧈 <span id="healthyFat">0g</span>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-label">⚖️ Difference</div>
+      <div id="diffText" class="summary-value">Select dishes to compare</div>
+    </div>
+
+    <div class="summary-actions">
+      <button class="reset-btn" id="resetBtn">🔄 Reset All</button>
+      <button class="preset-btn" id="exportPlateBtn">📸 Export as Image</button>
+      <button class="preset-btn" id="shareIgBtn">📱 Share to Instagram</button>
+    </div>
+
+    <div class="avatar-hint">
+      💡 Tip: Select multiple dishes to build a complete Ethiopian feast!
+    </div>
+
+    <div class="compare-panel">
+      <div class="compare-title">🔍 Compare Any Two Dishes</div>
+      <div class="compare-body">
+        <div class="compare-slot">
+          <div class="slot-title">Dish A</div>
+          <img id="compareImgA" class="compare-img" src="" alt="Dish A">
+          <div id="compareNameA" class="compare-name">-</div>
+          <div id="compareKcalA" class="compare-kcal"></div>
+          <div id="compareMacrosA" class="compare-macros"></div>
+        </div>
+        <div class="compare-slot">
+          <div class="slot-title">Dish B</div>
+          <img id="compareImgB" class="compare-img" src="" alt="Dish B">
+          <div id="compareNameB" class="compare-name">-</div>
+          <div id="compareKcalB" class="compare-kcal"></div>
+          <div id="compareMacrosB" class="compare-macros"></div>
+        </div>
+      </div>
+      <div class="compare-diff" id="compareDiff"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Instagram Export Layout (Hidden) -->
+<div id="instagramLayout">
+  <img id="igDishImage" src="" alt="Featured dish">
+  <h1 id="igDishName">Ethiopian Feast</h1>
+  <div id="igMacros"></div>
+  <div style="margin-top: auto; font-size: 24px; opacity: 0.8;">
+    🍽️ ETHIO•KCAL • Traditional Ethiopian Cuisine
+  </div>
+</div>
+
+<script>
+// Complete Ethiopian Food Database
+const foodsData = {
+  meat: [
+    { name: "Doro Wot", kcal: 450, protein: 32, carbs: 18, fat: 25, image: "https://tse4.mm.bing.net/th/id/OIP.IK3MssI7-pTsdFvZpl-kWAHaF2?rs=1&pid=ImgDetMain&o=7&rm=320", description: "Traditional spicy chicken stew with berbere" },
+    { name: "Kitfo", kcal: 520, protein: 40, carbs: 4, fat: 38, image: "https://th.bing.com/th/id/OIP.L_7irjRnNSMVbARkuGUZVgHaHa?w=180&h=180&c=7&r=0&o=7&pid=1.7&rm=3", description: "Minced raw beef seasoned with mitmita" },
+    { name: "Beef Tibs", kcal: 420, protein: 35, carbs: 4, fat: 22, image: "https://images.squarespace-cdn.com/content/v1/51c325ece4b01f1752ee3259/1592488907301-HYXR2WFC7BXFJHXMOL8U/DSC00054.jpg", description: "Sautéed beef with onions and peppers" },
+    { name: "Dulet", kcal: 480, protein: 35, carbs: 48, fat: 6, image: "https://ethiopian-food.org/wp-content/uploads/2024/02/Dulet-Ethiopian-Fried-Tripe-and-Liver-Recipe.jpg", description: "Fried tripe and liver with spices" },
+    { name: "Derek Tibs", kcal: 520, protein: 40, carbs: 4, fat: 38, image: "https://i.ytimg.com/vi/IbZltjYUJzs/maxresdefault.jpg", description: "Dry-fried beef with berbere" },
+    { name: "Awaze Tibs", kcal: 520, protein: 40, carbs: 4, fat: 38, image: "https://i.pinimg.com/originals/42/4c/6b/424c6bf67a8aedec8e8e5e983a5d18ed.jpg", description: "Tibs with awaze sauce" },
+    { name: "Lamb Tibs", kcal: 380, protein: 28, carbs: 10, fat: 24, image: "https://i.ytimg.com/vi/mPVgOdfRC0I/maxresdefault.jpg", description: "Sautéed lamb with rosemary" },
+    { name: "Beef Stew", kcal: 380, protein: 28, carbs: 10, fat: 24, image: "https://i.pinimg.com/736x/6f/ab/0f/6fab0f55b7cfd3da2788e738b189664c.jpg", description: "Traditional beef stew with vegetables" }
+  ],
+  veg: [
+    { name: "Shiro Wot", kcal: 280, protein: 12, carbs: 34, fat: 10, image: "https://www.fermentingforfoodies.com/wp-content/uploads/2019/06/Gluten-free-and-vegan-shiro-wat.jpg", description: "Chickpea flour stew with berbere" },
+    { name: "Gomen", kcal: 140, protein: 5, carbs: 12, fat: 8, image: "https://www.spiceindiaonline.com/wp-content/uploads/l_spinach2.jpg", description: "Collard greens with garlic" },
+    { name: "Atakilt Wot", kcal: 180, protein: 4, carbs: 28, fat: 12, image: "https://www.bing.com/th/id/OIP.Xyy6rzLzxHwNgQH4AbW65QHaHa?w=155&h=200&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2", description: "Cabbage, carrots, and potatoes" },
+    { name: "Alicha Wot", kcal: 260, protein: 18, carbs: 20, fat: 12, image: "https://honest-food.net/wp-content/uploads/2017/02/ethiopian-alicha-300x300.jpg", description: "Mild turmeric-based stew" },
+    { name: "Firfir", kcal: 350, protein: 10, carbs: 42, fat: 14, image: "https://i.ytimg.com/vi/RdqFt6-N9pY/maxresdefault.jpg", description: "Shredded injera with berbere sauce" },
+    { name: "Kik Alicha", kcal: 240, protein: 14, carbs: 32, fat: 4, image: "https://th.bing.com/th/id/OIP.bPEkdvYfJPBi2RDE3f0X2AHaE6?w=250&h=180&c=7&r=0&o=7&pid=1.7&rm=3", description: "Yellow split pea stew" },
+    { name: "Beyaynetu", kcal: 600, protein: 20, carbs: 80, fat: 18, image: "https://th.bing.com/th/id/OIP.sZxfUU57foo9Qtw7jCjGzgHaE8?w=294&h=196&c=7&r=0&o=7&pid=1.7&rm=3", description: "Mixed vegetable platter" },
+    { name: "Misir Wot", kcal: 310, protein: 18, carbs: 40, fat: 8, image: "https://www.chefspencil.com/wp-content/uploads/misir-wat.png", description: "Red lentil stew with berbere" }
+  ]
+};
+
+// State management
+let compareA = null;
+let compareB = null;
+let selectedDishImage = "";
+
+// Helper function to create dish elements
+function createDishElement(dish, type) {
+  const div = document.createElement('div');
+  div.className = `item ${type}`;
+  div.setAttribute('data-group', type);
+  div.setAttribute('data-kcal', dish.kcal);
+  div.setAttribute('data-protein', dish.protein);
+  div.setAttribute('data-carbs', dish.carbs);
+  div.setAttribute('data-fat', dish.fat);
+  div.setAttribute('data-image', dish.image);
+  div.setAttribute('data-name', dish.name);
+  div.setAttribute('data-description', dish.description);
+  
+  div.innerHTML = `
+    <img class="item-img" src="${dish.image}" alt="${dish.name}">
+    <div class="item-info">
+      <div class="item-name">
+        ${dish.name}
+        <span>${type === 'fast' ? 'Meat dish' : 'Vegetarian'}</span>
+      </div>
+      <div class="kcal">${dish.kcal} kcal</div>
+    </div>
+  `;
+  
+  return div;
+}
+
+// Populate dishes
+function populateDishes() {
+  const meatContainer = document.getElementById('meat-items-container');
+  const vegContainer = document.getElementById('veg-items-container');
+  
+  foodsData.meat.forEach(dish => {
+    meatContainer.appendChild(createDishElement(dish, 'fast'));
+  });
+  
+  foodsData.veg.forEach(dish => {
+    vegContainer.appendChild(createDishElement(dish, 'healthy'));
+  });
+}
+
+// Animation helper
+function bumpElement(element) {
+  if (!element) return;
+  element.classList.add('bump');
+  setTimeout(() => element.classList.remove('bump'), 200);
+}
+
+// Calculate totals
+function calculateTotals() {
+  let fastKcal = 0, fastP = 0, fastC = 0, fastF = 0;
+  let healthyKcal = 0, healthyP = 0, healthyC = 0, healthyF = 0;
+  
+  document.querySelectorAll('.item.selected').forEach(item => {
+    const group = item.getAttribute('data-group');
+    const kcal = Number(item.getAttribute('data-kcal') || 0);
+    const p = Number(item.getAttribute('data-protein') || 0);
+    const c = Number(item.getAttribute('data-carbs') || 0);
+    const f = Number(item.getAttribute('data-fat') || 0);
+    
+    if (group === 'fast') {
+      fastKcal += kcal; fastP += p; fastC += c; fastF += f;
+    } else if (group === 'healthy') {
+      healthyKcal += kcal; healthyP += p; healthyC += c; healthyF += f;
+    }
+  });
+  
+  // Update UI
+  document.getElementById('fastTotal').textContent = `${fastKcal} kcal`;
+  document.getElementById('healthyTotal').textContent = `${healthyKcal} kcal`;
+  document.getElementById('fastProtein').textContent = `${fastP}g`;
+  document.getElementById('fastCarbs').textContent = `${fastC}g`;
+  document.getElementById('fastFat').textContent = `${fastF}g`;
+  document.getElementById('healthyProtein').textContent = `${healthyP}g`;
+  document.getElementById('healthyCarbs').textContent = `${healthyC}g`;
+  document.getElementById('healthyFat').textContent = `${healthyF}g`;
+  
+  // Animate macros
+  ['fastProtein', 'fastCarbs', 'fastFat', 'healthyProtein', 'healthyCarbs', 'healthyFat'].forEach(id => {
+    bumpElement(document.getElementById(id));
+  });
+  
+  // Calculate difference
+  const diff = fastKcal - healthyKcal;
+  const diffText = document.getElementById('diffText');
+  if (fastKcal === 0 && healthyKcal === 0) {
+    diffText.textContent = 'Select dishes to start comparing';
+  } else if (diff > 0) {
+    diffText.innerHTML = `🥩 Meat plate is <strong style="color: var(--ethiopian-red)">${diff} kcal</strong> higher`;
+  } else if (diff < 0) {
+    diffText.innerHTML = `🌱 Vegetable plate is <strong style="color: var(--ethiopian-green)">${Math.abs(diff)} kcal</strong> higher`;
+  } else {
+    diffText.innerHTML = `⚖️ Both plates have the same calories!`;
+  }
+}
+
+// Update preview panel
+function updatePreview(item) {
+  const name = item.getAttribute('data-name');
+  const kcal = item.getAttribute('data-kcal');
+  const protein = item.getAttribute('data-protein');
+  const carbs = item.getAttribute('data-carbs');
+  const fat = item.getAttribute('data-fat');
+  const image = item.getAttribute('data-image');
+  const description = item.getAttribute('data-description');
+  
+  document.getElementById('previewName').textContent = name || 'Selected dish';
+  document.getElementById('previewKcal').textContent = kcal ? `${kcal} calories` : '';
+  document.getElementById('previewMacros').textContent = `💪 ${protein}g • 🍚 ${carbs}g • 🧈 ${fat}g`;
+  document.getElementById('previewNotes').textContent = description || '';
+  
+  const previewImg = document.getElementById('previewImage');
+  if (image) {
+    previewImg.src = image;
+    previewImg.style.display = 'block';
+  } else {
+    previewImg.style.display = 'none';
+  }
+}
+
+// Update compare panel
+function updateCompare(slot, item) {
+  const name = item.getAttribute('data-name');
+  const kcal = item.getAttribute('data-kcal');
+  const protein = item.getAttribute('data-protein');
+  const carbs = item.getAttribute('data-carbs');
+  const fat = item.getAttribute('data-fat');
+  const image = item.getAttribute('data-image');
+  
+  document.getElementById(`compareName${slot}`).textContent = name || '-';
+  document.getElementById(`compareKcal${slot}`).textContent = kcal ? `${kcal} kcal` : '';
+  document.getElementById(`compareMacros${slot}`).textContent = `💪 ${protein}g • 🍚 ${carbs}g • 🧈 ${fat}g`;
+  
+  const imgEl = document.getElementById(`compareImg${slot}`);
+  if (image) {
+    imgEl.src = image;
+    imgEl.style.display = 'block';
+  } else {
+    imgEl.style.display = 'none';
+  }
+  
+  return { kcal: Number(kcal) };
+}
+
+// Handle dish selection
+function handleDishSelection(item) {
+  // Toggle selection
+  item.classList.toggle('selected');
+  calculateTotals();
+  updatePreview(item);
+  
+  // Handle comparison
+  if (!compareA) {
+    compareA = updateCompare('A', item);
+  } else if (!compareB) {
+    compareB = updateCompare('B', item);
+    const diff = compareA.kcal - compareB.kcal;
+    const diffEl = document.getElementById('compareDiff');
+    if (diff > 0) {
+      diffEl.textContent = `📊 Dish A is ${diff} kcal higher than Dish B`;
+    } else if (diff < 0) {
+      diffEl.textContent = `📊 Dish B is ${Math.abs(diff)} kcal higher than Dish A`;
+    } else {
+      diffEl.textContent = `📊 Both dishes have the same calories!`;
+    }
+  } else {
+    // Reset comparison and set new first dish
+    compareA = updateCompare('A', item);
+    compareB = null;
+    document.getElementById('compareNameB').textContent = '-';
+    document.getElementById('compareKcalB').textContent = '';
+    document.getElementById('compareMacrosB').textContent = '';
+    document.getElementById('compareImgB').style.display = 'none';
+    document.getElementById('compareDiff').textContent = '';
+  }
+}
+
+// Add custom dish
+function addCustomDish(type) {
+  const prefix = type === 'fast' ? 'fast' : 'healthy';
+  const nameInput = document.getElementById(`${prefix}Name`);
+  const kcalInput = document.getElementById(`${prefix}Kcal`);
+  const proteinInput = document.getElementById(`${prefix}Protein`);
+  const carbsInput = document.getElementById(`${prefix}Carbs`);
+  const fatInput = document.getElementById(`${prefix}Fat`);
+  const errorEl = document.getElementById(`${prefix}Error`);
+  
+  const name = nameInput.value.trim();
+  const kcal = Number(kcalInput.value);
+  const protein = Number(proteinInput.value) || 0;
+  const carbs = Number(carbsInput.value) || 0;
+  const fat = Number(fatInput.value) || 0;
+  
+  if (!name || !kcal) {
+    errorEl.textContent = '❌ Please enter at least a name and calorie value';
+    return;
+  }
+  
+  errorEl.textContent = '';
+  
+  const container = document.getElementById(`${prefix === 'fast' ? 'meat-items-container' : 'veg-items-container'}`);
+  const dish = {
+    name, kcal, protein, carbs, fat,
+    image: '',
+    description: `Custom ${type === 'fast' ? 'meat' : 'vegetable'} dish`
+  };
+  
+  const newItem = createDishElement(dish, prefix);
+  container.appendChild(newItem);
+  
+  // Clear inputs
+  nameInput.value = '';
+  kcalInput.value = '';
+  proteinInput.value = '';
+  carbsInput.value = '';
+  fatInput.value = '';
+}
+
+// Reset everything
+function resetAll() {
+  document.querySelectorAll('.item.selected').forEach(item => {
+    item.classList.remove('selected');
+  });
+  calculateTotals();
+  
+  document.getElementById('previewName').textContent = 'Tap any dish to preview';
+  document.getElementById('previewKcal').textContent = '';
+  document.getElementById('previewMacros').textContent = '';
+  document.getElementById('previewNotes').textContent = '';
+  document.getElementById('previewImage').style.display = 'none';
+  
+  compareA = null;
+  compareB = null;
+  document.getElementById('compareNameA').textContent = '-';
+  document.getElementById('compareNameB').textContent = '-';
+  document.getElementById('compareKcalA').textContent = '';
+  document.getElementById('compareKcalB').textContent = '';
+  document.getElementById('compareMacrosA').textContent = '';
+  document.getElementById('compareMacrosB').textContent = '';
+  document.getElementById('compareImgA').style.display = 'none';
+  document.getElementById('compareImgB').style.display = 'none';
+  document.getElementById('compareDiff').textContent = '';
+  
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.value = '';
+}
+
+// Export as image
+async function exportAsImage(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
+    });
+    const link = document.createElement('a');
+    link.download = `ethiopian-${elementId}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  } catch (error) {
+    console.error('Export failed:', error);
+    alert('Failed to export image. Please try again.');
+  }
+}
+
+// Share to Instagram layout
+function shareToInstagram() {
+  const selectedItems = document.querySelectorAll('.item.selected');
+  if (selectedItems.length === 0) {
+    alert('Please select at least one dish first!');
+    return;
+  }
+  
+  // Use first selected dish for the image
+  const firstItem = selectedItems[0];
+  const dishImage = firstItem.getAttribute('data-image');
+  const dishName = firstItem.getAttribute('data-name');
+  const dishKcal = firstItem.getAttribute('data-kcal');
+  
+  // Get totals
+  const fastTotal = document.getElementById('fastTotal').textContent;
+  const healthyTotal = document.getElementById('healthyTotal').textContent;
+  const fastMacros = `💪 ${document.getElementById('fastProtein').textContent} • 🍚 ${document.getElementById('fastCarbs').textContent} • 🧈 ${document.getElementById('fastFat').textContent}`;
+  const healthyMacros = `💪 ${document.getElementById('healthyProtein').textContent} • 🍚 ${document.getElementById('healthyCarbs').textContent} • 🧈 ${document.getElementById('healthyFat').textContent}`;
+  
+  const igLayout = document.getElementById('instagramLayout');
+  const igImage = document.getElementById('igDishImage');
+  const igName = document.getElementById('igDishName');
+  const igMacros = document.getElementById('igMacros');
+  
+  igImage.src = dishImage || 'https://via.placeholder.com/600';
+  igName.textContent = dishName || 'Ethiopian Dish';
+  igMacros.innerHTML = `
+    <div>🥩 Meat: ${fastTotal} | ${fastMacros}</div>
+    <div>🌱 Veg: ${healthyTotal} | ${healthyMacros}</div>
+    <div style="margin-top: 20px;">⭐ Featured: ${dishName} - ${dishKcal} kcal</div>
+  `;
+  
+  igLayout.style.display = 'flex';
+  setTimeout(() => {
+    exportAsImage('instagramLayout');
+    setTimeout(() => {
+      igLayout.style.display = 'none';
+    }, 500);
+  }, 100);
+}
+
+// Event listeners
+function setupEventListeners() {
+  // Dish selection
+  document.addEventListener('click', (e) => {
+    const item = e.target.closest('.item');
+    if (item) handleDishSelection(item);
+  });
+  
+  // Search functionality
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.item').forEach(item => {
+        const name = item.getAttribute('data-name')?.toLowerCase() || '';
+        item.style.display = name.includes(query) ? 'flex' : 'none';
+      });
+    });
+  }
+  
+  // Buttons
+  document.getElementById('fastComboBtn')?.addEventListener('click', () => {
+    document.querySelectorAll('.item.fast').forEach(item => item.classList.add('selected'));
+    calculateTotals();
+  });
+  
+  document.getElementById('healthyComboBtn')?.addEventListener('click', () => {
+    document.querySelectorAll('.item.healthy').forEach(item => item.classList.add('selected'));
+    calculateTotals();
+  });
+  
+  document.getElementById('autoPlateBtn')?.addEventListener('click', () => {
+    const meatItems = Array.from(document.querySelectorAll('.item.fast'));
+    const vegItems = Array.from(document.querySelectorAll('.item.healthy'));
+    const randomMeat = meatItems.sort(() => 0.5 - Math.random()).slice(0, 2);
+    const randomVeg = vegItems.sort(() => 0.5 - Math.random()).slice(0, 2);
+    
+    document.querySelectorAll('.item.selected').forEach(i => i.classList.remove('selected'));
+    [...randomMeat, ...randomVeg].forEach(i => i.classList.add('selected'));
+    calculateTotals();
+  });
+  
+  document.getElementById('addFast')?.addEventListener('click', () => addCustomDish('fast'));
+  document.getElementById('addHealthy')?.addEventListener('click', () => addCustomDish('healthy'));
+  document.getElementById('resetBtn')?.addEventListener('click', resetAll);
+  document.getElementById('exportPlateBtn')?.addEventListener('click', () => exportAsImage('summary'));
+  document.getElementById('shareIgBtn')?.addEventListener('click', shareToInstagram);
+  
+  // Theme switching
+  const themeButtons = document.querySelectorAll('[data-theme-btn]');
+  themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.getAttribute('data-theme-btn');
+      document.body.setAttribute('data-theme', theme);
+      themeButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem('ethio-theme', theme);
+    });
+  });
+  
+  // Load saved theme
+  const savedTheme = localStorage.getItem('ethio-theme');
+  if (savedTheme) {
+    document.body.setAttribute('data-theme', savedTheme);
+    themeButtons.forEach(btn => {
+      if (btn.getAttribute('data-theme-btn') === savedTheme) {
+        btn.classList.add('active');
+      }
+    });
+  }
+}
+
+// Initialize app
+function init() {
+  populateDishes();
+  setupEventListeners();
+  calculateTotals();
+}
+
+// Start the app
+init();
+</script>
+</body>
+</html>
